@@ -7,17 +7,37 @@ class   SignUpForm  extends React.Component {
     state   =   {
         username    :   "",
         password    :   "",
+        confirmPassword :   "",
+        gender      :   "",
+        checkbox    :   "",
+        number      :   "",
         errors      :   {}
     }
 
     onChange(event) {
-        this.setState({[event.target.name]  :   event.target.value});
+        console.log(this.state);
+        console.log(event);
+
+        console.log(event.target.type);
+
+        if(event.target.type    !=  'checkbox') {
+            this.setState({[event.target.name]  :   event.target.value});
+        }   else    {
+            console.log(event.target.checked);
+            this.setState({[event.target.name]  :   event.target.checked});
+        }
+
+        console.log(this.state);
     }
 
     formValidation()    {
         const regex =   /[^a-zA-Z0-9]/;
         const passwordRegex =   "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$";
-        const   {username,  password}   =   this.state;
+        const numberRegex   =   /^[6-9]\d{9}$/;
+        const   {username,  password, confirmPassword, gender, checkbox, number}   =   this.state;
+
+        console.log(number);
+        console.log(number.match(numberRegex));
 
         let isValid =   true;
         const   errors  =   {};
@@ -42,6 +62,48 @@ class   SignUpForm  extends React.Component {
             errors.password =   "Password should contain Minimum eight characters, at least one letter and one number.";
             isValid =   false;
         }
+
+        console.log(confirmPassword ==  password);
+
+        if(confirmPassword.trim().length    <   8)  {
+            errors.confirmPassword  =   "Confirm Password must be of Length 8 or higher";
+        }
+
+        if((password && confirmPassword)  &&  confirmPassword !=  password)  {
+
+            console.log('inside confirm password');
+
+            errors.confirmPassword  =   "Password & Confirm Password should match";
+            isValid =   false;
+        }
+
+        if(confirmPassword.trim().match(passwordRegex))    {
+            errors.confirmPassword =   "Confirm Password should contain Minimum eight characters, at least one letter and one number.";
+            isValid =   false;
+        }
+
+        if(!gender)  {
+            console.log(gender);
+            errors.gender   =   "Gender is required.";
+            isValid =   false;
+        } 
+
+        if(!(number.match(numberRegex)))   {
+            errors.number   =   "Number should be of 10 characters & should be in the following format 988xxxxx44";
+            isValid =   false;
+
+            console.log(number);
+        }
+
+        console.log(checkbox);
+        console.log(gender);
+        console.log(errors);
+
+        if(!checkbox)   {
+            errors.checkbox =   "Terms &  Conditions is required.";
+            isValid =   false;
+        }
+
         this.setState({errors});
         return isValid;
     }
@@ -50,6 +112,12 @@ class   SignUpForm  extends React.Component {
         event.preventDefault();
 
         const   isValid =   this.formValidation();
+
+        console.log(isValid);
+
+        if(isValid) {
+            console.log(this.state);
+        }
     }
 
     constructor(props)  {
@@ -61,8 +129,7 @@ class   SignUpForm  extends React.Component {
     }
 
     render()    {
-        const {username, password, errors}  =   this.state;
-        console.log(errors);
+        const {username, password, confirmPassword, gender, number, errors}  =   this.state;
         
         return  (
             <div>
@@ -84,7 +151,7 @@ class   SignUpForm  extends React.Component {
                     <Form.Group className="mb-3"    controlId="formBasicPassword">
                         <Form.Label>Password</Form.Label>
                         <Form.Control   
-                        type="text"    
+                        type="password"    
                         placeholder="Enter Password"
                         value={password}
                         onChange={this.onChange}
@@ -95,11 +162,71 @@ class   SignUpForm  extends React.Component {
 
                     </Form.Group>
 
-                    <Button variant="primary"   onClick={this.onSubmit}>Submit</Button>
+                    <Form.Group className="mb-3"    controlId="formBasicPassword">
+                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Control   
+                        type="password"    
+                        placeholder="Confirm Password"
+                        value={confirmPassword}
+                        onChange={this.onChange}
+                        name="confirmPassword"
+                        ></Form.Control>
 
-                    {/* {Object.keys(errors).map((key)  =>  {
-                        return  <div    key={key}>{errors[key]}</div>
-                    })} */}
+                        {errors.confirmPassword ? <div className="error-block">{errors.confirmPassword}</div>   :   ''}
+
+                    </Form.Group>
+
+                    <Form.Group className="mb-3"    controlId="formBasicPassword">
+                        <Form.Label>Gender</Form.Label>
+                        <Form.Check
+                        type="radio"
+                        id="male"
+                        label="Male"
+                        name="gender"
+                        value="male"
+                        onChange={this.onChange}
+                        ></Form.Check>
+
+                        <Form.Check
+                        type="radio"
+                        id="female"
+                        label="Female"
+                        name="gender"
+                        value="female"
+                        onChange={this.onChange}
+                        ></Form.Check>
+
+                        {errors.gender  ?   <div    className="error-block">{errors.gender}</div>   :   ''}
+
+                    </Form.Group>
+
+                    <Form.Group className="mb-3"    controlId="formBasicName">
+                        <Form.Label>Number</Form.Label>
+                        <Form.Control   
+                        type="number"    
+                        placeholder="Enter Number"
+                        value={number}
+                        onChange={this.onChange}
+                        name="number"
+                        ></Form.Control>
+
+                        {errors.number ? <div className="error-block">{errors.number}</div>   :   ''}
+                    </Form.Group>
+
+                    <Form.Group className="mb-3"    controlId="formBasicPassword">
+                        <Form.Check
+                        type="checkbox"
+                        onChange={this.onChange}
+                        label="I accept the Terms & Conditions"
+                        name="checkbox"
+                        
+                        ></Form.Check>
+
+                        {errors.checkbox  ?   <div    className="error-block">{errors.checkbox}</div>   :   ''}
+
+                    </Form.Group>
+
+                    <Button variant="primary"   onClick={this.onSubmit}>Submit</Button>
                 </Form>
             </div>
         )
