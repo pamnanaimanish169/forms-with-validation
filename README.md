@@ -1,3 +1,7 @@
+# About Project:
+
+- Registration form with validation in React.js.
+
 # Next Steps:
 
 - Multi stepper form
